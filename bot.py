@@ -64,4 +64,12 @@ async def on_command_error(ctx, error):
     logging.error(error_message)
 
 
+# iterate over all files in the "cogs folder"
+for file in os.listdir('cogs'):
+    if file == "__pycache__":
+        continue
+    import_path = 'cogs.' + file.split('.')[0]
+    bot.load_extension(import_path)
+
+
 bot.run(discord_config['token'])

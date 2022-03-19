@@ -1,6 +1,7 @@
 {
     "token": "",
     "prefix": "fer ",
+    "owner": 0,
     "place": {
         "guild": 0,
         "channel": 0
