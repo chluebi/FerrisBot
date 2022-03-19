@@ -2,3 +2,7 @@
 configs/discord.json
 
 configs/database.json
+
+__pycache__/
+
+Pipfile.lock

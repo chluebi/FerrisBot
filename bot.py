@@ -17,13 +17,6 @@ intents.members = True
 
 bot = commands.Bot(command_prefix=discord_config['prefix'], intents=intents)
 
-'''
-basic logging
-to log anything just import logging and do
-logging.error(text)
-or
-logging.info(text)
-'''
 logging.basicConfig(handlers=[logging.FileHandler('bot.log', 'a', encoding='utf-8')],
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -63,12 +56,51 @@ async def on_command_error(ctx, error):
 
     logging.error(error_message)
 
+extensions = {}
 
+@commands.check(util.is_owner)
+@bot.group(name='extension')
+async def extension(ctx : commands.Context):
+    if ctx.invoked_subcommand is None:
+        embed = util.standard_embed(ctx, 'Shows loaded extensions', title='Loaded Extensions')
+        embed.add_field(name='Loaded', value='⏰' + '\n'.join(key for key, value in extensions.items() if value))
+        embed.add_field(name='Not Loaded', value='😴' + '\n'.join(key for key, value in extensions.items() if not value))
+        await ctx.send(embed=embed)
+
+@extension.command(name='load')
+async def load_extension(ctx : commands.Context, name : str):
+    if name not in extensions:
+        await util.send_embed(ctx, util.error_embed(ctx, f'Extension ``{name}`` not found.'))
+        return
+    if extensions[name]:
+        await util.send_embed(ctx, util.error_embed(ctx, f'Extension ``{name}`` already loaded.'))
+        return
+    extensions[name] = True
+    import_path = 'cogs.' + name
+    bot.load_extension(import_path)
+    await util.send_embed(ctx, util.success_embed(ctx, f'Extension ``{name}`` loaded.'))
+
+@extension.command(name='unload')
+async def unload_extension(ctx : commands.Context, name : str):
+    if name not in extensions:
+        await util.send_embed(ctx, util.error_embed(ctx, f'Extension ``{name}`` not found.'))
+    if not extensions[name]:
+        await util.send_embed(ctx, util.error_embed(ctx, f'Extension ``{name}`` already not loaded.'))
+        return
+    extensions[name] = False
+    import_path = 'cogs.' + name
+    bot.unload_extension(import_path)
+    await util.send_embed(ctx, util.success_embed(ctx, f'Extension ``{name}`` unloaded.'))
+
+    
 # iterate over all files in the "cogs folder"
 for file in os.listdir('cogs'):
     if file == "__pycache__":
         continue
-    import_path = 'cogs.' + file.split('.')[0]
+
+    file_name = file.split('.')[0]
+    extensions[file_name] = True
+    import_path = 'cogs.' + file_name
     bot.load_extension(import_path)
 
 
