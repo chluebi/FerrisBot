@@ -54,6 +54,8 @@ async def on_command_error(ctx, error):
         await ctx.message.add_reaction('❌')
         return
 
+    await util.send_embed(ctx, util.error_embed(ctx, f'```{error}```'))
+
     logging.error(error_message)
 
 extensions = {}

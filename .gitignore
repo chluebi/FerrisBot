@@ -6,3 +6,7 @@ configs/database.json
 __pycache__/
 
 Pipfile.lock
+
+temp.png
+
+bot.log
