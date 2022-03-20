@@ -70,23 +70,26 @@ class PlaceCog(commands.Cog):
         def rgb_to_hex(rgb):
             return '#%02x%02x%02x' % rgb
 
-        sort = orders[order]
         orders = {
             'id':lambda p: p,
             'mod': lambda p: min(p[0] % 10, p[1] % 10),
             'color': lambda p: p[2],
             'random': lambda p: random.random()
         }
+        sort = orders[order]
+
+        await util.send_embed(ctx, util.success_embed(ctx, f'Reading Pixels...'))
 
         pixels = []
         for i in range(width):
             for j in range(height):
                 rgb = file.getpixel((i, j))
-                print(rgb)
                 if rgb[3] >= 255:
                     pixels.append((i, j, rgb))
 
         pixels.sort(key=sort)
+
+        await util.send_embed(ctx, util.success_embed(ctx, f'Inserting into database...'))
 
         project = db.PlaceProject(name, len(pixels), 0)
         project.insert()
