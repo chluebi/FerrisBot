@@ -54,9 +54,16 @@ class PlaceCog(commands.Cog):
             await util.send_embed(ctx, util.success_embed(ctx, f'Stopped Placing.'))
             self.placing = False
 
+
     @commands.check(util.is_owner)
-    @commands.command(name='place_project')
-    async def place_project(self, ctx, name, x : int, y : int, order='id'):
+    @commands.group(name='place_project')
+    async def place_project(self, ctx):
+        if ctx.invoked_subcommand is None:
+            return
+    
+
+    @place_project.command(name='add')
+    async def place_project_add(ctx, name, x : int, y : int, order='id'):
         await ctx.message.attachments[0].save('dev/temp.png')
         file = Image.open('dev/temp.png')
         width, height = file.size
@@ -92,6 +99,15 @@ class PlaceCog(commands.Cog):
             pixel.insert()
 
         await util.send_embed(ctx, util.success_embed(ctx, f'Successfully generated project'))
+
+    @place_project.command(name='remove')
+    async def place_project_add(ctx, name):
+        project = db.PlaceProject.get_by_name(name)
+        if project is None:
+            await util.send_embed(ctx, util.error_embed(ctx, 'Project Not Found'))
+        
+        project.delete()
+        await util.send_embed(ctx, util.success_embed(ctx, 'Project Successfully deleted'))
 
 def setup(bot: commands.Bot):
     bot.add_cog(PlaceCog(bot))
