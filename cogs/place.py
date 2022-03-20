@@ -62,31 +62,34 @@ class PlaceCog(commands.Cog):
 
     @commands.check(util.is_owner)
     @place.group(name='project')
-    async def place_project_add(self, ctx, name, x : int, y : int, order='id'):
-        await ctx.message.attachments[0].save('dev/temp.png')
-        file = Image.open('dev/temp.png')
+    async def place_project_add(ctx, name, x : int, y : int, order='id'):
+        await ctx.message.attachments[0].save('data/temp.png')
+        file = Image.open('data/temp.png')
         width, height = file.size
 
         def rgb_to_hex(rgb):
             return '#%02x%02x%02x' % rgb
 
-        sort = orders[order]
         orders = {
             'id':lambda p: p,
             'mod': lambda p: min(p[0] % 10, p[1] % 10),
             'color': lambda p: p[2],
             'random': lambda p: random.random()
         }
+        sort = orders[order]
+
+        await util.send_embed(ctx, util.success_embed(ctx, f'Reading Pixels...'))
 
         pixels = []
         for i in range(width):
             for j in range(height):
                 rgb = file.getpixel((i, j))
-                print(rgb)
                 if rgb[3] >= 255:
                     pixels.append((i, j, rgb))
 
         pixels.sort(key=sort)
+
+        await util.send_embed(ctx, util.success_embed(ctx, f'Inserting into database...'))
 
         project = db.PlaceProject(name, len(pixels), 0)
         project.insert()
@@ -105,6 +108,7 @@ class PlaceCog(commands.Cog):
         project = db.PlaceProject.get_by_name(name)
         if project is None:
             await util.send_embed(ctx, util.error_embed(ctx, 'Project Not Found'))
+            return
         
         project.delete()
         await util.send_embed(ctx, util.success_embed(ctx, 'Project Successfully deleted'))
