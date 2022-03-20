@@ -1,4 +1,5 @@
 import discord
+import random
 from discord.ext import tasks, commands
 from PIL import Image
 
@@ -16,23 +17,26 @@ class PlaceCog(commands.Cog):
     def cog_unload(self):
         self.place_pixel.cancel()
 
-    @tasks.loop(seconds=2.0)
+    @tasks.loop(seconds=2)
     async def place_pixel(self):
-
-        for i in range(3):
-            pixel = db.PlacePixel.get_random()
-            if pixel is None:
-                return
-            project = db.PlaceProject.get_by_name(pixel.project)
-            project.placed += 1
+        pixel = db.PlacePixel.get_random()
+        if pixel is None:
+            return
+        project = db.PlaceProject.get_by_name(pixel.project)
+        project.placed += 1
+        if project.placed >= project.total:
+            project.delete()
+        else:
             project.update()
-            pixel.delete()
+        pixel.delete()
 
-            guild = self.bot.get_guild(config['place']['guild'])
-            channel = guild.get_channel(config['place']['channel'])
+        guild = self.bot.get_guild(config['place']['guild'])
+        channel = guild.get_channel(config['place']['channel'])
 
-            await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
+        await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
 
+
+    @commands.check(util.is_owner)
     @commands.command(name='place_status')
     async def place_status(self, ctx, subcommand=None):
         if subcommand is None:
@@ -52,7 +56,7 @@ class PlaceCog(commands.Cog):
 
     @commands.check(util.is_owner)
     @commands.command(name='place_project')
-    async def place_project(self, ctx, name, x : int, y : int):
+    async def place_project(self, ctx, name, x : int, y : int, order='id'):
         await ctx.message.attachments[0].save('temp.png')
         file = Image.open('temp.png')
         width, height = file.size
@@ -60,20 +64,31 @@ class PlaceCog(commands.Cog):
         def rgb_to_hex(rgb):
             return '#%02x%02x%02x' % rgb
 
-        
+        sort = orders[order]
+        orders = {
+            'id':lambda p: p,
+            'mod': lambda p: min(p[0] % 10, p[1] % 10),
+            'color': lambda p: p[2],
+            'random': lambda p: random.random()
+        }
+
         pixels = []
         for i in range(width):
             for j in range(height):
                 rgb = file.getpixel((i, j))
-                color_string = rgb_to_hex((rgb[0], rgb[1], rgb[2]))
-                pixels.append((i, j, color_string))
+                print(rgb)
+                if rgb[3] >= 255:
+                    pixels.append((i, j, rgb))
+
+        pixels.sort(key=sort)
 
         project = db.PlaceProject(name, len(pixels), 0)
         project.insert()
         project = db.PlaceProject.get_by_name(name)
 
         for i, j, color in pixels:
-            pixel = db.PlacePixel(0, project.name, x+i, y+j, color)
+            color_string = rgb_to_hex((color[0], color[1], color[2]))
+            pixel = db.PlacePixel(0, project.name, x+i, y+j, color_string)
             pixel.insert()
 
         await util.send_embed(ctx, util.success_embed(ctx, f'Successfully generated project'))

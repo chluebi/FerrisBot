@@ -125,6 +125,13 @@ class PlaceProject:
         conn.commit()
         cur.close()
 
+    def delete(self):
+        cur = conn.cursor()
+        command = '''DELETE FROM PlaceProjects WHERE name = %s'''
+        cur.execute(command,(self.name, ))
+        conn.commit()
+        cur.close()
+
 
 class PlacePixel:
 
