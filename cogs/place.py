@@ -61,7 +61,7 @@ class PlaceCog(commands.Cog):
         self.placing = False
 
     @commands.check(util.is_owner)
-    @place.command(name='project')
+    @place.group(name='project')
     async def place_project_add(self, ctx, name, x : int, y : int, order='id'):
         await ctx.message.attachments[0].save('dev/temp.png')
         file = Image.open('dev/temp.png')
@@ -100,7 +100,7 @@ class PlaceCog(commands.Cog):
         await util.send_embed(ctx, util.success_embed(ctx, f'Successfully generated project'))
 
     @commands.check(util.is_owner)
-    @place.command(name='remove')
+    @place.group(name='remove')
     async def place_project_add(self, ctx, name):
         project = db.PlaceProject.get_by_name(name)
         if project is None:
