@@ -1,6 +1,6 @@
 import json
 import asyncio
-from tabnanny import check
+import discord
 from discord import Color, Embed
 from discord.ext import commands
 
@@ -34,8 +34,9 @@ def success_embed(ctx: commands.Context, content, title='Success', color=Color.g
 async def send_embed(ctx: commands.Context, embed : Embed, delete=20):
 	try:
 		msg = await ctx.send(embed=embed)
-		await asyncio.sleep(delete)
-		await msg.delete()
+		if not isinstance(ctx.channel, discord.DMChannel):
+			await asyncio.sleep(delete)
+			await msg.delete()
 	except Exception as e:
 		await ctx.add_reaction('❌')
 
