@@ -36,34 +36,32 @@ class PlaceCog(commands.Cog):
         await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
 
 
-    @commands.check(util.is_owner)
-    @commands.command(name='place_status')
-    async def place_status(self, ctx, subcommand=None):
-        if subcommand is None:
+    @commands.group(name='place')
+    async def place(self, ctx):
+        if ctx.invoked_subcommand is None:
             embed = util.standard_embed(ctx, f'Status of placing: ``{self.placing}``')
             projects = db.PlaceProject.get_all()
             for project in projects:
                 embed.add_field(name=f'Project: {project.name}', value=f'Placed: {project.placed}/{project.total}')
             await util.send_embed(ctx, embed)
-        elif subcommand == 'start':
-            self.place_pixel.start()
-            await util.send_embed(ctx, util.success_embed(ctx, f'Started Placing.'))
-            self.placing = True
-        elif subcommand == 'stop':
-            self.place_pixel.cancel()
-            await util.send_embed(ctx, util.success_embed(ctx, f'Stopped Placing.'))
-            self.placing = False
-
 
     @commands.check(util.is_owner)
-    @commands.group(name='place_project')
-    async def place_project(self, ctx):
-        if ctx.invoked_subcommand is None:
-            return
-    
+    @place.group(name='start')
+    async def place_start(self, ctx):
+        self.place_pixel.start()
+        await util.send_embed(ctx, util.success_embed(ctx, f'Started Placing.'))
+        self.placing = True
 
-    @place_project.command(name='add')
-    async def place_project_add(ctx, name, x : int, y : int, order='id'):
+    @commands.check(util.is_owner)
+    @place.group(name='stop')
+    async def place_stop(self, ctx):
+        self.place_pixel.cancel()
+        await util.send_embed(ctx, util.success_embed(ctx, f'Stopped Placing.'))
+        self.placing = False
+
+    @commands.check(util.is_owner)
+    @place.command(name='project')
+    async def place_project_add(self, ctx, name, x : int, y : int, order='id'):
         await ctx.message.attachments[0].save('dev/temp.png')
         file = Image.open('dev/temp.png')
         width, height = file.size
@@ -100,8 +98,9 @@ class PlaceCog(commands.Cog):
 
         await util.send_embed(ctx, util.success_embed(ctx, f'Successfully generated project'))
 
-    @place_project.command(name='remove')
-    async def place_project_add(ctx, name):
+    @commands.check(util.is_owner)
+    @place.command(name='remove')
+    async def place_project_add(self, ctx, name):
         project = db.PlaceProject.get_by_name(name)
         if project is None:
             await util.send_embed(ctx, util.error_embed(ctx, 'Project Not Found'))
