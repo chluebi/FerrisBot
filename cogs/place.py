@@ -57,8 +57,8 @@ class PlaceCog(commands.Cog):
     @commands.check(util.is_owner)
     @commands.command(name='place_project')
     async def place_project(self, ctx, name, x : int, y : int, order='id'):
-        await ctx.message.attachments[0].save('temp.png')
-        file = Image.open('temp.png')
+        await ctx.message.attachments[0].save('dev/temp.png')
+        file = Image.open('dev/temp.png')
         width, height = file.size
 
         def rgb_to_hex(rgb):
