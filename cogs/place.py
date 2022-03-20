@@ -15,6 +15,7 @@ class PlaceCog(commands.Cog):
         self.placing = False
 
     def cog_unload(self):
+        self.placing = False
         self.place_pixel.cancel()
 
     @tasks.loop(seconds=2)
