@@ -140,7 +140,7 @@ class PlacePixel:
         command = '''
             CREATE TABLE IF NOT EXISTS PlacePixels ( 
             id SERIAL PRIMARY KEY,
-            project text REFERENCES PlaceProjects(name),
+            project text REFERENCES PlaceProjects(name) ON DELETE CASCADE,
             x int,
             y int,
             color text
