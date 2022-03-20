@@ -62,9 +62,9 @@ class PlaceCog(commands.Cog):
 
     @commands.check(util.is_owner)
     @place.group(name='project')
-    async def place_project_add(self, ctx, name, x : int, y : int, order='id'):
-        await ctx.message.attachments[0].save('dev/temp.png')
-        file = Image.open('dev/temp.png')
+    async def place_project_add(ctx, name, x : int, y : int, order='id'):
+        await ctx.message.attachments[0].save('data/temp.png')
+        file = Image.open('data/temp.png')
         width, height = file.size
 
         def rgb_to_hex(rgb):
@@ -105,6 +105,7 @@ class PlaceCog(commands.Cog):
         project = db.PlaceProject.get_by_name(name)
         if project is None:
             await util.send_embed(ctx, util.error_embed(ctx, 'Project Not Found'))
+            return
         
         project.delete()
         await util.send_embed(ctx, util.success_embed(ctx, 'Project Successfully deleted'))
