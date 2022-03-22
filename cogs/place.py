@@ -34,7 +34,10 @@ class PlaceCog(commands.Cog):
         guild = self.bot.get_guild(config['place']['guild'])
         channel = guild.get_channel(config['place']['channel'])
 
-        await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
+        try:
+            await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
+        except Exception as e:
+            pass
 
 
     @commands.group(name='place')
