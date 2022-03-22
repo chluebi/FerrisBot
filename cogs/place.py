@@ -24,18 +24,18 @@ class PlaceCog(commands.Cog):
         if pixel is None:
             return
         project = db.PlaceProject.get_by_name(pixel.project)
-        project.placed += 1
-        if project.placed >= project.total:
-            project.delete()
-        else:
-            project.update()
-        pixel.delete()
-
+        
         guild = self.bot.get_guild(config['place']['guild'])
         channel = guild.get_channel(config['place']['channel'])
 
         try:
             await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
+            project.placed += 1
+            if project.placed >= project.total:
+                project.delete()
+            else:
+                project.update()
+            pixel.delete()
         except Exception as e:
             pass
 
@@ -76,8 +76,10 @@ class PlaceCog(commands.Cog):
         orders = {
             'id':lambda p: p,
             'mod': lambda p: min(p[0] % 10, p[1] % 10),
+            'grid': lambda p: min(p[0] % 10, p[1] % 10),
             'color': lambda p: p[2],
-            'random': lambda p: random.random()
+            'random': lambda p: random.random(),
+            'fill-grid': lambda p: (min(p[0] % 10, p[1] % 10) < 4, ((p[0] / 10) % 3, (p[1] / 10) % 3), (p[0] / 10, p[1] / 10), min(p[0] % 10, p[1] % 10))
         }
         sort = orders[order]
 
