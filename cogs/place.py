@@ -79,7 +79,7 @@ class PlaceCog(commands.Cog):
             'grid': lambda p: min(p[0] % 10, p[1] % 10),
             'color': lambda p: p[2],
             'random': lambda p: random.random(),
-            'fill-grid': lambda p: (min(p[0] % 10, p[1] % 10) < 4, ((p[0] / 10) % 3, (p[1] / 10) % 3), (p[0] / 10, p[1] / 10), min(p[0] % 10, p[1] % 10))
+            'fill-grid': lambda p: (min(p[0] % 10, p[1] % 10) if min(p[0] % 10, p[1] % 10) < 4 else 10, ((p[0] / 10) % 3, (p[1] / 10) % 3), (p[0] / 10, p[1] / 10), min(p[0] % 10, p[1] % 10))
         }
         sort = orders[order]
 
