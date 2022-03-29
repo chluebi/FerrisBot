@@ -13,37 +13,40 @@ class PlaceCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.placing = False
+        self.rate = 30
 
     def cog_unload(self):
         self.placing = False
         self.place_pixel.cancel()
 
-    @tasks.loop(seconds=2)
+    @tasks.loop(seconds=60)
     async def place_pixel(self):
-        pixel = db.PlacePixel.get_random()
-        if pixel is None:
-            return
-        project = db.PlaceProject.get_by_name(pixel.project)
-        
-        guild = self.bot.get_guild(config['place']['guild'])
-        channel = guild.get_channel(config['place']['channel'])
+        for i in range(int(self.rate)):
+            pixel = db.PlacePixel.get_random()
+            if pixel is None:
+                return
+            project = db.PlaceProject.get_by_name(pixel.project)
+            
+            guild = self.bot.get_guild(config['place']['guild'])
+            channel = guild.get_channel(config['place']['channel'])
 
-        try:
-            await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
-            project.placed += 1
-            if project.placed >= project.total:
-                project.delete()
-            else:
-                project.update()
-            pixel.delete()
-        except Exception as e:
-            pass
+            try:
+                await channel.send(f'.place setpixel {pixel.x} {pixel.y} {pixel.color}')
+                project.placed += 1
+                if project.placed >= project.total:
+                    project.delete()
+                else:
+                    project.update()
+                pixel.delete()
+            except Exception as e:
+                pass
 
 
     @commands.group(name='place')
     async def place(self, ctx):
         if ctx.invoked_subcommand is None:
-            embed = util.standard_embed(ctx, f'Status of placing: ``{self.placing}``')
+            embed = util.standard_embed(ctx, f'''Status of placing: ``{self.placing}``
+Rate: ``{self.rate}/min``''')
             projects = db.PlaceProject.get_all()
             for project in projects:
                 embed.add_field(name=f'Project: {project.name}', value=f'Placed: {project.placed}/{project.total}')
@@ -62,6 +65,19 @@ class PlaceCog(commands.Cog):
         self.place_pixel.cancel()
         await util.send_embed(ctx, util.success_embed(ctx, f'Stopped Placing.'))
         self.placing = False
+
+    @commands.check(util.is_owner)
+    @place.group(name='rate')
+    async def place_rate(self, ctx, rate: int):
+        if rate < 1 or rate > 60:
+            await util.send_embed(ctx, util.error_embed(ctx, f'Rate must be between 1 and 60.'))
+            return
+
+        self.rate = rate
+        self.place_pixel.cancel()
+        await util.send_embed(ctx, util.success_embed(ctx, f'Successfully set rate to ``{self.rate}/min``.'))
+        self.placing = False
+        self.place_pixel.start()
 
     @commands.check(util.is_owner)
     @place.group(name='project')
