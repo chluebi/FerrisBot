@@ -1,5 +1,6 @@
 import discord
 import random
+import time
 from discord.ext import tasks, commands
 from PIL import Image
 
@@ -99,7 +100,9 @@ Rate: ``{self.rate}/min``''')
         }
         sort = orders[order]
 
-        await util.send_embed(ctx, util.success_embed(ctx, f'Reading Pixels...'))
+        update_embed = util.success_embed(ctx, f'Reading Pixels... [0/{width*height}]')
+        update_msg = await ctx.send(embed=update_embed)
+        last_update = time.time()
 
         pixels = []
         for i in range(width):
@@ -108,20 +111,45 @@ Rate: ``{self.rate}/min``''')
                 if rgb[3] >= 255:
                     pixels.append((i, j, rgb))
 
+            if time.time() - last_update > 3:
+                last_update = time.time()
+                update_embed = util.success_embed(ctx, f'Reading Pixels... [{i*width + j}/{width*height}]')
+                await update_msg.edit(embed=update_embed)
+
+        last_update = time.time()
+        update_embed = util.success_embed(ctx, f'Sorting Pixels...')
+        await update_msg.edit(embed=update_embed)
+
         pixels.sort(key=sort)
 
-        await util.send_embed(ctx, util.success_embed(ctx, f'Inserting into database...'))
+        last_update = time.time()
+        update_embed = util.success_embed(ctx, f'Inserting into database... [0/{len(pixels)}]')
+        await update_msg.edit(embed=update_embed)
+
 
         project = db.PlaceProject(name, len(pixels), 0)
         project.insert()
         project = db.PlaceProject.get_by_name(name)
 
-        for i, j, color in pixels:
+        pixel_objects = []
+        for n, (i, j, color) in enumerate(pixels):
             color_string = rgb_to_hex((color[0], color[1], color[2]))
             pixel = db.PlacePixel(0, project.name, x+i, y+j, color_string)
-            pixel.insert()
+            pixel_objects.append(pixel)
 
-        await util.send_embed(ctx, util.success_embed(ctx, f'Successfully generated project'))
+            if time.time() - last_update > 3:
+                last_update = time.time()
+                update_embed = util.success_embed(ctx, f'Inserting into database... [{n}/{len(pixels)}]')
+                await update_msg.edit(embed=update_embed)
+
+        db.PlacePixel.insert_pixels(pixel_objects)
+
+        await update_msg.delete()
+        await util.send_embed(ctx, util.success_embed(ctx,
+f'''Successfully generated project ``{name}``.
+Pixels: {len(pixels)}
+Coolness: 11/10'''
+        ))
 
     @commands.check(util.is_owner)
     @place.group(name='remove')
