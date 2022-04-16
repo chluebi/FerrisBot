@@ -1,5 +1,6 @@
 from functools import total_ordering
 import psycopg2
+import psycopg2.extras
 from util import parse_config
 
 # standard database connection used by both services
@@ -201,6 +202,33 @@ class PlacePixel:
             return None
 
         return PlacePixel.create_from_row(row)
+
+    @staticmethod
+    def insert_pixels(pixels):
+        cur = conn.cursor()
+        command = '''INSERT INTO PlacePixels(
+        project,
+        x,
+        y,
+        color
+        ) 
+        VALUES (%s, %s, %s, %s);'''
+
+        formatted_pixels = []
+        for p in pixels:
+            formatted_pixels.append(
+                (
+                    p.project,
+                    p.x,
+                    p.y,
+                    p.color
+                )
+            )
+        
+        psycopg2.extras.execute_batch(cur, command, formatted_pixels)
+        conn.commit()
+        cur.close()
+
 
     def insert(self):
         cur = conn.cursor()
