@@ -43,14 +43,15 @@ class AmazonsCog(commands.Cog):
                 piece = game.Piece(column)
                 board[-1].append(piece)
 
-        ai = agents.Terror("Terror")
-        move = ai.select_move(board, own)
+        ai = agents.Terror("Terror", distance_eval=lambda d: 1/min(d, 3), unreachable_value=-0.2)
+        move, value = ai.select_move(board, own)
         
         (start_y, start_x), (move_y, move_x), (shoot_y, shoot_x) = move
 
         move_string = f'<@963682692732428330>|play|{game_id}|{start_x},{start_y}|{move_x},{move_y}|{shoot_x},{shoot_y}'
+        await msg.channel.send(f'Board State Evaluation: {value}')
         await msg.channel.send(move_string)
-
+        
 
     @commands.command()
     async def amazon_start(self, ctx, opponent : str):

@@ -110,7 +110,9 @@ class Game:
             }
         )
 
-    def format(self):
+    def format(self, move):
+
+        (start_y, start_x), (move_y, move_x), (arrow_y, arrow_x) = move
         chessboard = [
             ["🟨" if (i+j) % 2 == 0 else "🟧" for j in range(len(self.board))] for i in range(len(self.board[0]))]
         for i in range(len(self.board)):
@@ -121,6 +123,21 @@ class Game:
                     chessboard[i][j] = "⬜"
                 if self.board[i][j] == Piece.arrow:
                     chessboard[i][j] = "🟦"
+
+                if (i, j) == (start_y, start_x):
+                    if chessboard[i][j] == '🟨':
+                        chessboard[i][j] = '🟡'
+                    elif chessboard[i][j] == '🟧':
+                        chessboard[i][j] = '🟠'
+
+                if (i, j) == (move_y, move_x):
+                    if chessboard[i][j] == '⬛':
+                        chessboard[i][j] = '⚫'
+                    elif chessboard[i][j] == '⬜':
+                        chessboard[i][j] = '⚪'
+
+                if (i, j) == (arrow_y, arrow_x):
+                    chessboard[i][j] = '🔵'
 
         return "\n".join(["".join(row) for row in chessboard])
 
