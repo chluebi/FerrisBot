@@ -48,8 +48,8 @@ class AmazonsCog(commands.Cog):
         
         (start_y, start_x), (move_y, move_x), (shoot_y, shoot_x) = move
 
-        move_string = f'<@963682692732428330>|play|{game_id}|{start_x},{start_y}|{move_x},{move_y}|{shoot_x},{shoot_y}'
-        await msg.channel.send(f'Board State Evaluation: {value}')
+        comment = f'Board State Evaluation: {value}'
+        move_string = f'<@963682692732428330>|play|{game_id}|{start_x},{start_y}|{move_x},{move_y}|{shoot_x},{shoot_y}|{comment}'
         await msg.channel.send(move_string)
         
 
