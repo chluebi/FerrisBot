@@ -29,7 +29,7 @@ class AmazonsCog(commands.Cog):
 
         game_id = game_data['id']
 
-        if game_data['playerWhite'] == self.bot.user.id:
+        if game_data['turn'] == game.Player.white.value:
             own = game.Piece.white_amazon
         else:
             own = game.Piece.black_amazon
