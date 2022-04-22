@@ -53,7 +53,7 @@ class Agent:
         arrow_to = rand.choice(potential_arrow)
 
         # moves the piece
-        return (move_from, move_to, arrow_to)
+        return (move_from, move_to, arrow_to), 0
 
 
 class Game:
@@ -93,7 +93,7 @@ class Game:
                     continue
                 if board[y+i][x+j] == Piece.nothing:
                     possible_movement.append([x+j, y+i])
-        return possible_movement
+        return possible_movement, 0
 
     def _can_move(self, x, y):
         # checks if a piece can move
