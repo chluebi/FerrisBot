@@ -58,5 +58,5 @@ class AmazonsCog(commands.Cog):
         await ctx.send(f'<@963682692732428330> | start | {opponent}')
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(AmazonsCog(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(AmazonsCog(bot))

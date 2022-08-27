@@ -3,6 +3,7 @@ import os
 import logging
 import traceback
 import discord
+import asyncio
 from discord.ext import commands
 
 # local imports
@@ -103,7 +104,7 @@ for file in os.listdir('cogs'):
     file_name = file.split('.')[0]
     extensions[file_name] = True
     import_path = 'cogs.' + file_name
-    bot.load_extension(import_path)
+    asyncio.run(bot.load_extension(import_path))
 
 
 bot.run(discord_config['token'])

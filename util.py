@@ -17,17 +17,17 @@ async def is_owner(ctx):
 
 def standard_embed(ctx: commands.Context, content, title='Info', color=Color.lighter_gray()):
 	embed = Embed(title=title, description=content, color=color)
-	embed.set_footer(text=f'Command Invoked by {str(ctx.author)}', icon_url=ctx.author.avatar_url)
+	embed.set_footer(text=f'Command Invoked by {str(ctx.author)}', icon_url=ctx.author.avatar.url)
 	return embed
 
 def error_embed(ctx: commands.Context, content, title='Error Occured', color=Color.red()):
 	embed = Embed(title=title, description=content, color=color)
-	embed.set_footer(text=f'Command Invoked by {str(ctx.author)}', icon_url=ctx.author.avatar_url)
+	embed.set_footer(text=f'Command Invoked by {str(ctx.author)}', icon_url=ctx.author.avatar.url)
 	return embed
 
 def success_embed(ctx: commands.Context, content, title='Success', color=Color.green()):
 	embed = Embed(title=title, description=content, color=color)
-	embed.set_footer(text=f'Command Invoked by {str(ctx.author)}', icon_url=ctx.author.avatar_url)
+	embed.set_footer(text=f'Command Invoked by {str(ctx.author)}', icon_url=ctx.author.avatar.url)
 	return embed
 
 

@@ -162,5 +162,5 @@ Coolness: 11/10'''
         project.delete()
         await util.send_embed(ctx, util.success_embed(ctx, 'Project Successfully deleted'))
 
-def setup(bot: commands.Bot):
-    bot.add_cog(PlaceCog(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(PlaceCog(bot))
