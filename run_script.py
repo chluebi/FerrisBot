@@ -12,8 +12,8 @@ from amazons.agents import *
 # FreeTerror("FreeTerror Shiv", lambda d: 1/min(d, 3), -0.2, 2, lambda p, r: min(max(1, 4-r), int(math.sqrt(p))), 240)
 
 game = Game()
-ai1 = FreeTerror("FreeTerror", lambda d: 1/min(d, 3), -0.2, 2, lambda p, r: min(max(1, 4-r), int(math.sqrt(p))), 240)
-ai2 = DeepTerror("DeepTerror Knife", lambda d: 1/min(d, 3), -0.2, 5, 5, 6, 2)
+ai1 = DeepTerror("DeepTerror Knife", lambda d: 1/min(d, 3), -0.2, 5, 5, 6, 2)
+ai2 = DeepTerror("DeepTerror Knife", lambda d: 1/min(d, 3), -0.2, 5, 5, 6, 6)
 
 
 

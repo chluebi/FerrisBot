@@ -13,7 +13,7 @@ discord_config = util.parse_config('discord')
 # determining intents
 intents = discord.Intents.default()
 intents.members = True
-# intents.presences = True
+intents.message_content = True
 
 bot = commands.Bot(command_prefix=discord_config['prefix'], intents=intents)
 
