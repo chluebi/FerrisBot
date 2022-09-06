@@ -1,0 +1,1 @@
+amazons/amazons_rust/target/debug/amazons_rust < amazons/input.txt
