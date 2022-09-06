@@ -10,3 +10,9 @@ Pipfile.lock
 temp.png
 
 bot.log
+
+amazons/amazons_rust/Cargo.lock
+
+amazons/amazons_rust/target/
+
+amazons/input.txt
