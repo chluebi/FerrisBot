@@ -1,4 +1,5 @@
 # FerrisBot
+
 A Discord Bot for personal use for certain interactions in Discord. The current main systems are a way to participate in ETH place and a passable [Amazons](https://en.wikipedia.org/wiki/Game_of_the_Amazons) AI.
 
 # How to Use
