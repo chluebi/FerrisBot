@@ -16,3 +16,7 @@ amazons/amazons_rust/Cargo.lock
 amazons/amazons_rust/target/
 
 amazons/input.txt
+
+chess/chess_rust/Cargo.lock
+
+chess/chess_rust/target/
