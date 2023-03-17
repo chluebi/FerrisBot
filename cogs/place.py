@@ -82,7 +82,7 @@ Rate: ``{self.rate}/min``''')
 
     @commands.check(util.is_owner)
     @place.group(name='project')
-    async def place_project_add(self, ctx, name, x : int, y : int, order='id'):
+    async def place_rate(self, ctx, name: str, x: int, y: int, order='fill-grid'):
         await ctx.message.attachments[0].save('data/temp.png')
         file = Image.open('data/temp.png')
         width, height = file.size
