@@ -82,7 +82,7 @@ Rate: ``{self.rate}/min``''')
 
     @commands.check(util.is_owner)
     @place.group(name='project')
-    async def place_rate(self, ctx, name: str, x: int, y: int, order='fill-grid'):
+    async def place_project_add(self, ctx, name: str, x: int, y: int, order='fill-grid'):
         await ctx.message.attachments[0].save('data/temp.png')
         file = Image.open('data/temp.png')
         width, height = file.size
@@ -153,7 +153,7 @@ Coolness: 11/10'''
 
     @commands.check(util.is_owner)
     @place.group(name='remove')
-    async def place_project_add(self, ctx, name):
+    async def place_project_remove(self, ctx, name):
         project = db.PlaceProject.get_by_name(name)
         if project is None:
             await util.send_embed(ctx, util.error_embed(ctx, 'Project Not Found'))
